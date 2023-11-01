@@ -39,12 +39,14 @@ public class FasterCrystals extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
-        PacketEvents.getAPI().load();
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+            PacketEvents.getAPI().load();
 
-        CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+            CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+        });
     }
-
+    
     @Override
     public void onEnable() {
         switch (Bukkit.getMinecraftVersion()) {
@@ -119,18 +121,20 @@ public class FasterCrystals extends JavaPlugin {
     }
 
     public void spawnCrystal(Location loc, Player player, ItemStack item) {
-        Location clonedLoc = loc.clone().subtract(0.5, 0.0, 0.5);
-        if (clonedLoc.getBlock().getType() != Material.AIR) return;
-
-        clonedLoc.add(0.5, 1.0, 0.5);
-        List<Entity> nearbyEntities = new ArrayList<>(clonedLoc.getWorld().getNearbyEntities(clonedLoc, 0.5, 1, 0.5));
-
-        if (nearbyEntities.isEmpty()) {
-            loc.getWorld().spawn(clonedLoc.subtract(0.0, 1.0, 0.0), EnderCrystal.class, entity -> entity.setShowingBottom(false));
-
-            if (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR) {
-                item.setAmount(item.getAmount() - 1);
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            Location clonedLoc = loc.clone().subtract(0.5, 0.0, 0.5);
+            if (clonedLoc.getBlock().getType() != Material.AIR) return;
+    
+            clonedLoc.add(0.5, 1.0, 0.5);
+            List<Entity> nearbyEntities = new ArrayList<>(clonedLoc.getWorld().getNearbyEntities(clonedLoc, 0.5, 1, 0.5));
+    
+            if (nearbyEntities.isEmpty()) {
+                loc.getWorld().spawn(clonedLoc.subtract(0.0, 1.0, 0.0), EnderCrystal.class, entity -> entity.setShowingBottom(false));
+    
+                if (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR) {
+                    item.setAmount(item.getAmount() - 1);
+                }
             }
-        }
+        });
     }
 }
