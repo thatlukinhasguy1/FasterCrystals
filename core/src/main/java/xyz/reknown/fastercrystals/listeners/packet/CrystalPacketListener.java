@@ -31,21 +31,23 @@ public class CrystalPacketListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
-            handleInteractEntity(event);
-        } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
-            handleAnimation(event);
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(FasterCrystals.class), () -> {
+            if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
+                handleInteractEntity(event);
+            } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
+                handleAnimation(event);
+            }
 
-        // Handle last packet to ignore certain Animation packets
-        Player player = (Player) event.getPlayer();
-        if (player != null) {
-            FasterCrystals plugin = JavaPlugin.getPlugin(FasterCrystals.class);
-            User user = plugin.getUsers().get(player);
-            if (user == null) return;
+            // Handle last packet to ignore certain Animation packets
+            Player player = (Player) event.getPlayer();
+            if (player != null) {
+                FasterCrystals plugin = JavaPlugin.getPlugin(FasterCrystals.class);
+                User user = plugin.getUsers().get(player);
+                if (user == null) return;
 
-            setLastPacket(user, event);
-        }
+                setLastPacket(user, event);
+            }
+        });
     }
 
     private void handleInteractEntity(PacketReceiveEvent event) {
