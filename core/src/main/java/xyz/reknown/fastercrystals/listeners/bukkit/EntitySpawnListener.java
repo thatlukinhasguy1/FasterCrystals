@@ -12,8 +12,10 @@ public class EntitySpawnListener implements Listener {
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent event) {
         if (event.getEntityType() == EntityType.ENDER_CRYSTAL) {
-            FasterCrystals plugin = JavaPlugin.getPlugin(FasterCrystals.class);
-            plugin.addCrystal(event.getEntity().getEntityId(), (EnderCrystal) event.getEntity());
+            Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(FasterCrystals.class), () -> {
+                FasterCrystals plugin = JavaPlugin.getPlugin(FasterCrystals.class);
+                plugin.addCrystal(event.getEntity().getEntityId(), (EnderCrystal) event.getEntity());
+            });
         }
     }
 }
